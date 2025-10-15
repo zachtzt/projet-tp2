@@ -1,14 +1,14 @@
 public class Piece {
-    private int centValue;
+    private double centValue;
 
     public Piece(int centValue) {
         setCentValue(centValue);
     }
-    public int getCentValue() {
+    public double getCentValue() {
         return centValue;
     }
 
-    private void setCentValue(int centValue) {
+    private void setCentValue(double centValue) {
         if (centValue == 25 || centValue == 100 || centValue == 200)
             this.centValue = centValue;
     }

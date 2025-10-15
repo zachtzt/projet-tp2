@@ -1,3 +1,8 @@
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public class Borne {
     private Transaction transactionCourante;
     private double banqueDeLaBorne;
@@ -8,21 +13,42 @@ public class Borne {
     }
 
     public void commencerTransaction(String placeStationnement){
-        if (placeStationnement.matches("G[0-9]{3}") || placeStationnement.matches("SQ[0-9]{3}")){
-            this.transactionCourante = new Transaction(placeStationnement);
+        if (placeStationnement.matches("G[0-9]{3}")){
+            if ((LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 23)) ||
+                    (LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY && (LocalDateTime.now().getHour() > 13 && LocalDateTime.now().getHour() < 18)) ||
+                    (LocalDateTime.now().getHour() > 8 && LocalDateTime.now().getHour() < 23))
+                    this.transactionCourante = new Transaction(placeStationnement, 425);
+            else
+                System.out.println("Cette place de stationnement n'est pas payante en ce moment!");
+        } else if (placeStationnement.matches("SQ[0-9]{3}")) {
+            if ((LocalDate.now().getDayOfWeek().getValue() <= 5 && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 21)) ||
+                    (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 18)))
+                    this.transactionCourante = new Transaction(placeStationnement, 225);
+            else
+                System.out.println("Cette place de stationnement n'est pas payante en ce moment!");
         } else {
             System.out.println("Erreur ! Veuillez réessayer avec une place de stationnement valide.");
         }
     }
+
+    public Transaction getTransactionCourante(){
+        return transactionCourante;
+    }
+
     public void terminerTransactionCourante(){
         this.banqueDeLaBorne += this.transactionCourante.getMontant();
+        System.out.println("-----------------------------------------------");
+        System.out.println("Place du stationnement : " + this.transactionCourante.getPlaceStationnement());
+        System.out.println("Total de la transaction : " + this.transactionCourante.getMontant() + " $");
+        System.out.println("Durée du parking : " + this.transactionCourante.getDureeMinutes() + " minutes");
+        System.out.println("-----------------------------------------------");
         this.transactionCourante = null;
     }
     public void genererRapport(){
         System.out.println("-----------------------------------------------");
-        System.out.println("Argent dans la Borne : " + this.banqueDeLaBorne);
-        System.out.println("-----------------------------------------------");
+        System.out.println("Argent dans la Borne : " + this.banqueDeLaBorne + " $");
         System.out.println("Le solde de cette banque sera remis à 0,00$");
+        System.out.println("-----------------------------------------------");
         this.banqueDeLaBorne = 0;
     }
 }
