@@ -31,6 +31,11 @@ public class Transaction {
             System.out.println("Erreur ! Durée maximale de parking est de " + MAX_DUREE_PARKING + " minutes!");
     }
 
+    public void setDureeParkingToMax(){
+        this.dureeMinutes = MAX_DUREE_PARKING;
+        this.montant = (this.tauxHoraireCent * 2 ) / 100;
+    }
+
     public void insererPiece(Piece p){
         this.montant += (p.getCentValue() / 100);
         if ((this.dureeMinutes + (p.getCentValue() * 60) / tauxHoraireCent) < MAX_DUREE_PARKING) {

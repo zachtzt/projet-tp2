@@ -35,6 +35,11 @@ public class Borne {
         return transactionCourante;
     }
 
+    public void annulerTransactionCourante(){
+        this.transactionCourante = null;
+        System.out.println("TRANSACTION ANNULÉE");
+    }
+
     public void terminerTransactionCourante(){
         this.banqueDeLaBorne += this.transactionCourante.getMontant();
         System.out.println("-----------------------------------------------");
