@@ -6,9 +6,9 @@ public class CarteCredit {
     private double solde;
 
     public CarteCredit(String num, YearMonth expiration, double solde) {
-        this.num = num;
+        setNum(num);
         this.expiration = expiration;
-        this.solde = solde;
+        this.solde = solde > 0 ? solde : 0;
     }
 
     public String getNum() {
@@ -16,15 +16,12 @@ public class CarteCredit {
     }
 
     private void setNum(String num) {
-        this.num = num;
+        if (num.matches("[0-9]{16}"))
+            this.num = num;
     }
 
     public YearMonth getExpiration() {
         return expiration;
-    }
-
-    public void setExpiration(YearMonth expiration) {
-        this.expiration = expiration;
     }
 
     public double getSolde() {

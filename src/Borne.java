@@ -41,10 +41,20 @@ public class Borne {
     }
 
     public void terminerTransactionCourante(){
-        this.banqueDeLaBorne += this.transactionCourante.getMontant();
+        this.banqueDeLaBorne += this.transactionCourante.getMontantCredit() + this.transactionCourante.getMontantComptant();
         System.out.println("-----------------------------------------------");
+        if (this.transactionCourante.getMontantCredit() > 0) {
+            System.out.println("Type : Crédit");
+            System.out.println("Total : " + this.transactionCourante.getMontantCredit());
+            System.out.println("-----------------------------------------------");
+        }
+        if (this.transactionCourante.getMontantComptant() > 0) {
+            System.out.println("Type : Comptant");
+            System.out.println("Total : " + this.transactionCourante.getMontantComptant());
+            System.out.println("-----------------------------------------------");
+        }
         System.out.println("Place du stationnement : " + this.transactionCourante.getPlaceStationnement());
-        System.out.println("Total de la transaction : " + this.transactionCourante.getMontant() + " $");
+        System.out.println("Total de la transaction : " + (this.transactionCourante.getMontantCredit() + this.transactionCourante.getMontantComptant()) + " $");
         System.out.println("Durée du parking : " + this.transactionCourante.getDureeMinutes() + " minutes");
         System.out.println("-----------------------------------------------");
         this.transactionCourante = null;
