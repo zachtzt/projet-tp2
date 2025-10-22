@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,11 +60,14 @@ public class Borne {
         System.out.println("-----------------------------------------------");
         this.transactionCourante = null;
     }
-    public void genererRapport(){
-        System.out.println("-----------------------------------------------");
-        System.out.println("Argent dans la Borne : " + this.banqueDeLaBorne + " $");
-        System.out.println("Le solde de cette banque sera remis à 0,00$");
-        System.out.println("-----------------------------------------------");
+    public String genererRapport(){
+        String rapport =
+                        "-----------------------------------------------\n" +
+                        "Argent dans la Borne : " + this.banqueDeLaBorne + " $\n" +
+                        "Le solde de cette banque sera remis à 0,00$\n" +
+                        "-----------------------------------------------\n";
         this.banqueDeLaBorne = 0;
+
+        return rapport;
     }
 }
