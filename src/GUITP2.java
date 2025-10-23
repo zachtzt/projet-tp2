@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -197,54 +199,128 @@ public class GUITP2 {
     }
 
     public void boutonNumeroLettre_actionPerformed(String lettreChiffre) {
-        // 2. À compléter, afficher la place choisie dans le champMessage
-        // à partir de la lettre ou du chiffre cliqué en paramètre
         place += lettreChiffre;
         champMessage.setText(place);
     }
 
     private void boutonEntree_actionPerformed() {
-        //3. à coder
+        if (borne.verifPlace(place)) {
+            if (borne.verifHoraire(place)) {
+                borne.commencerTransaction(place);
+                champMessage.setText(place + "\nPlace Valide\n" + "Vous pouvez commencer la transation dans la section 2.");
+            }else
+                champMessage.setText("\n Cette place est présentement gratuite !");
+        }else{
+            champMessage.setText("Erreur! Veuillez réessayer avec une place valide !");
+            place = "";
+        }
     }
 
     private void bouton25_actionPerformed() {
-        //4. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.insererPiece(new Piece(25)))
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+            else
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+        }
     }
 
     private void bouton100_actionPerformed() {
-        //5. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.insererPiece(new Piece(100)))
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+            else
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+        }
     }
 
     private void bouton200_actionPerformed() {
-        //6. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.insererPiece(new Piece(200)))
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+            else
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+        }
     }
 
     private void boutonValiderDateExp_actionPerformed(){
-        //7. à coder
+        if (borne.getTransactionCourante() != null){
+            String num = champNumeroCarte.getText().replace(" ", "");
+            if (num.matches("[0-9]{16}")){
+                if (Integer.parseInt(champDateExp.getText().substring(0,2)) <= 12){
+                    YearMonth expiration = YearMonth.parse(champDateExp.getText(), DateTimeFormatter.ofPattern("MM/yy"));
+                    if (borne.validerCarte(expiration)){
+                        borne.getTransactionCourante().setCarte(champNumeroCarte.getText(), expiration);
+                        champMessage.setText("Carte Acceptée !\n" + "Vous pouvez utiliser les boutons MAX, + et - \n pour choisir la durée du stationnement.");
+                    } else
+                        champMessage.setText("Erreur ! Cette carte est expirée !");
+                } else
+                    champMessage.setText("Erreur ! Mois de la carte invalide !");
+            } else
+                champMessage.setText("Erreur ! Le numéro de carte de crédit est invalide !" + "\nVeuillez vérifier qu'il contient bien 16 chiffres.");
+        }
     }
 
     private void boutonPlus_actionPerformed() {
-        //8. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.getTransactionCourante().getCarte() != null){
+                if (borne.ajouterQuinzeMinutes()){
+                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                }else
+                    champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+            } else
+                champMessage.setText("Erreur ! Aucune carte validée !");
+        } else
+            champMessage.setText("Erreur ! Aucune transaction en cours !");
     }
 
     private void boutonMoins_actionPerformed(){
-        //9. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.getTransactionCourante().getCarte() != null){
+                if (borne.retirerQuinzeMinutes()){
+                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                }else
+                    champMessage.setText("Erreur ! Durée minimale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+            } else
+                champMessage.setText("Erreur ! Aucune carte validée !");
+        } else
+            champMessage.setText("Erreur ! Aucune transaction en cours !");
     }
 
     private void boutonMax_actionPerformed() {
-        //10. à coder
+        if (borne.getTransactionCourante() != null){
+            if (borne.getTransactionCourante().getCarte() != null){
+                borne.setDureeParkingToMax();
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+            } else
+                champMessage.setText("Erreur ! Aucune carte validée !");
+        } else
+            champMessage.setText("Erreur ! Aucune transaction en cours !");
     }
 
     private void boutonOK_actionPerformed() {
-        // 11 à coder
+        if (borne.getTransactionCourante() != null) {
+            zoneRecu.setText(borne.terminerTransactionCourante());
+            champMessage.setText("Transaction terminée, veuillez prendre votre reçu.");
+        } else
+            champMessage.setText("Erreur ! Aucune transaction en cours !");
+        place = "";
     }
 
     private void boutonAnnuler_actionPerformed() {
-       //12 à coder
+        if (borne.getTransactionCourante() != null){
+            borne.annulerTransactionCourante();
+            place = "";
+            champMessage.setText("Transaction annulée !");
+        } else {
+            champMessage.setText("");
+            zoneRecu.setText("");
+            place = "";
+        }
     }
 
     private void boutonRapport_actionPerformed() {
-        champMessage.setText(borne.genererRapport());
+        zoneRecu.setText(borne.genererRapport());
     }
 
     public static void main(String[] args) {

@@ -2,72 +2,122 @@ import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Date;
 
 public class Borne {
     private Transaction transactionCourante;
     private double banqueDeLaBorne;
 
+    public static final int MAX_DUREE_PARKING = 120;
+    public static final int MIN_DUREE_PARKING = 0;
+    public static final int INTERVAL_MINUTES = 15;
+
     public Borne() {
-        this.transactionCourante = null;
-        this.banqueDeLaBorne = 0;
+        transactionCourante = null;
+        banqueDeLaBorne = 0;
     }
 
     public void commencerTransaction(String placeStationnement){
         if (placeStationnement.matches("G[0-9]{3}")){
-            if ((LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 23)) ||
-                    (LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY && (LocalDateTime.now().getHour() > 13 && LocalDateTime.now().getHour() < 18)) ||
-                    (LocalDateTime.now().getHour() > 8 && LocalDateTime.now().getHour() < 23))
-                    this.transactionCourante = new Transaction(placeStationnement, 425);
-            else
-                System.out.println("Cette place de stationnement n'est pas payante en ce moment!");
+            transactionCourante = new Transaction(placeStationnement, 425);
         } else if (placeStationnement.matches("SQ[0-9]{3}")) {
-            if ((LocalDate.now().getDayOfWeek().getValue() <= 5 && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 21)) ||
-                    (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 18)))
-                    this.transactionCourante = new Transaction(placeStationnement, 225);
-            else
-                System.out.println("Cette place de stationnement n'est pas payante en ce moment!");
-        } else {
-            System.out.println("Erreur ! Veuillez réessayer avec une place de stationnement valide.");
+            transactionCourante = new Transaction(placeStationnement, 225);
         }
     }
 
-    public Transaction getTransactionCourante(){
-        return transactionCourante;
+    public boolean verifHoraire(String placeStationnement){
+        if (placeStationnement.matches("G[0-9]{3}") && (
+                (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 23)) ||
+                (LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY && (LocalDateTime.now().getHour() > 13 && LocalDateTime.now().getHour() < 18)) ||
+                (LocalDateTime.now().getHour() > 8 && LocalDateTime.now().getHour() < 23))){
+            return true;
+        } else if ((placeStationnement.matches("SQ[0-9]{3}")) && (
+                (LocalDate.now().getDayOfWeek().getValue() <= 5 && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 21)) ||
+                (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 18)))) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public boolean verifPlace(String placeStationnement){
+        return (placeStationnement.matches("G[0-9]{3}") || placeStationnement.matches("SQ[0-9]{3}"));
+    }
+
+    public boolean ajouterQuinzeMinutes(){
+        if (getTransactionCourante().getDureeMinutes() < MAX_DUREE_PARKING) {
+            getTransactionCourante().setDureeMinutes(getTransactionCourante().getDureeMinutes() + INTERVAL_MINUTES);
+            getTransactionCourante().setMontantCredit(getTransactionCourante().getMontantCredit() + (getTransactionCourante().getTauxHoraireCent() / 4));
+            return true;
+        }
+        return false;
+    }
+
+    public void setDureeParkingToMax(){
+        getTransactionCourante().setDureeMinutes(MAX_DUREE_PARKING);
+        getTransactionCourante().setMontantComptant((getTransactionCourante().getTauxHoraireCent() * 2) / 100);
+    }
+
+    public boolean retirerQuinzeMinutes(){
+        if (getTransactionCourante().getDureeMinutes() >= MIN_DUREE_PARKING){
+            getTransactionCourante().setDureeMinutes(getTransactionCourante().getDureeMinutes() - INTERVAL_MINUTES);
+            getTransactionCourante().setMontantCredit(getTransactionCourante().getMontantCredit() - (getTransactionCourante().getTauxHoraireCent() / 4));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean validerCarte(YearMonth expiration) {
+        return (YearMonth.now().isBefore(expiration));
+    }
+
+    public boolean insererPiece(Piece p){
+        transactionCourante.setMontantComptant(transactionCourante.getMontantComptant() + (p.getCentValue() / 100));
+        if ((transactionCourante.getDureeMinutes() + (p.getCentValue() * 60) / transactionCourante.getTauxHoraireCent()) < MAX_DUREE_PARKING) {
+            transactionCourante.setDureeMinutes((int)Math.round(transactionCourante.getDureeMinutes() + (p.getCentValue() * 60) / transactionCourante.getTauxHoraireCent()));
+            return true;
+        } else {
+            transactionCourante.setDureeMinutes(120);
+            return false;
+        }
     }
 
     public void annulerTransactionCourante(){
-        this.transactionCourante = null;
-        System.out.println("TRANSACTION ANNULÉE");
+        transactionCourante = null;
     }
 
-    public void terminerTransactionCourante(){
-        this.banqueDeLaBorne += this.transactionCourante.getMontantCredit() + this.transactionCourante.getMontantComptant();
-        System.out.println("-----------------------------------------------");
-        if (this.transactionCourante.getMontantCredit() > 0) {
-            System.out.println("Type : Crédit");
-            System.out.println("Total : " + this.transactionCourante.getMontantCredit());
-            System.out.println("-----------------------------------------------");
+    public String terminerTransactionCourante(){
+        banqueDeLaBorne += transactionCourante.getMontant();
+        String facture = "";
+
+        if (transactionCourante.getMontantCredit() > 0) {
+            facture += "Type : Crédit\n" +
+                        "Total : " + transactionCourante.getMontantCredit() / 100 + "\n";
         }
-        if (this.transactionCourante.getMontantComptant() > 0) {
-            System.out.println("Type : Comptant");
-            System.out.println("Total : " + this.transactionCourante.getMontantComptant());
-            System.out.println("-----------------------------------------------");
+        if (transactionCourante.getMontantComptant() > 0) {
+            facture += "Type : Comptant\n" +
+                        "Total : " + transactionCourante.getMontantComptant() + "\n";
         }
-        System.out.println("Place du stationnement : " + this.transactionCourante.getPlaceStationnement());
-        System.out.println("Total de la transaction : " + (this.transactionCourante.getMontantCredit() + this.transactionCourante.getMontantComptant()) + " $");
-        System.out.println("Durée du parking : " + this.transactionCourante.getDureeMinutes() + " minutes");
-        System.out.println("-----------------------------------------------");
-        this.transactionCourante = null;
+        facture += "Place du stationnement : " + transactionCourante.getPlaceStationnement() + "\n" +
+                    "Total de la transaction : " + (transactionCourante.getMontant()) + " $\n" +
+                    "Durée du parking : " + transactionCourante.getDureeMinutes() + " minutes";
+        transactionCourante = null;
+        return facture;
     }
     public String genererRapport(){
         String rapport =
                         "-----------------------------------------------\n" +
-                        "Argent dans la Borne : " + this.banqueDeLaBorne + " $\n" +
-                        "Le solde de cette banque sera remis à 0,00$\n" +
+                        "Solde de la borne : " + banqueDeLaBorne + " $\n" +
+                        "La banque de cette borne est remise à 0.00$\n" +
                         "-----------------------------------------------\n";
-        this.banqueDeLaBorne = 0;
+        banqueDeLaBorne = 0;
 
         return rapport;
+    }
+
+    public Transaction getTransactionCourante(){
+        return transactionCourante;
     }
 }
