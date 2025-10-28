@@ -13,6 +13,8 @@ public class Borne {
     public static final int MIN_DUREE_PARKING = 0;
     public static final int INTERVAL_MINUTES = 15;
 
+    public static final DecimalFormat DF = new DecimalFormat("#.##");
+
     public Borne() {
         transactionCourante = null;
         banqueDeLaBorne = 0;
@@ -57,7 +59,7 @@ public class Borne {
 
     public void setDureeParkingToMax(){
         getTransactionCourante().setDureeMinutes(MAX_DUREE_PARKING);
-        getTransactionCourante().setMontantComptant((getTransactionCourante().getTauxHoraireCent() * 2) / 100);
+        getTransactionCourante().setMontantCredit((getTransactionCourante().getTauxHoraireCent() * 2));
     }
 
     public boolean retirerQuinzeMinutes(){
@@ -94,22 +96,23 @@ public class Borne {
 
         if (transactionCourante.getMontantCredit() > 0) {
             facture += "Type : Crédit\n" +
-                        "Total : " + transactionCourante.getMontantCredit() / 100 + "\n";
+                        "Total : " + DF.format(transactionCourante.getMontantCredit() / 100) + " $\n";
         }
         if (transactionCourante.getMontantComptant() > 0) {
             facture += "Type : Comptant\n" +
-                        "Total : " + transactionCourante.getMontantComptant() + "\n";
+                        "Total : " + DF.format(transactionCourante.getMontantComptant()) + " $\n";
         }
         facture += "Place du stationnement : " + transactionCourante.getPlaceStationnement() + "\n" +
-                    "Total de la transaction : " + (transactionCourante.getMontant()) + " $\n" +
+                    "Total de la transaction : " + DF.format(transactionCourante.getMontant()) + " $\n" +
                     "Durée du parking : " + transactionCourante.getDureeMinutes() + " minutes";
         transactionCourante = null;
         return facture;
     }
     public String genererRapport(){
+
         String rapport =
                         "-----------------------------------------------\n" +
-                        "Solde de la borne : " + banqueDeLaBorne + " $\n" +
+                        "Solde de la borne : " + DF.format(banqueDeLaBorne) + " $\n" +
                         "La banque de cette borne est remise à 0.00$\n" +
                         "-----------------------------------------------\n";
         banqueDeLaBorne = 0;

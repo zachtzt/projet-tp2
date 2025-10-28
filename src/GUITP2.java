@@ -3,6 +3,7 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -219,27 +220,27 @@ public class GUITP2 {
     private void bouton25_actionPerformed() {
         if (borne.getTransactionCourante() != null){
             if (borne.insererPiece(new Piece(25)))
-                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
     private void bouton100_actionPerformed() {
         if (borne.getTransactionCourante() != null){
             if (borne.insererPiece(new Piece(100)))
-                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
     private void bouton200_actionPerformed() {
         if (borne.getTransactionCourante() != null){
             if (borne.insererPiece(new Piece(200)))
-                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
@@ -265,9 +266,9 @@ public class GUITP2 {
         if (borne.getTransactionCourante() != null){
             if (borne.getTransactionCourante().getCarte() != null){
                 if (borne.ajouterQuinzeMinutes()){
-                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
                 }else
-                    champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+                    champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             } else
                 champMessage.setText("Erreur ! Aucune carte validée !");
         } else
@@ -278,9 +279,9 @@ public class GUITP2 {
         if (borne.getTransactionCourante() != null){
             if (borne.getTransactionCourante().getCarte() != null){
                 if (borne.retirerQuinzeMinutes()){
-                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                    champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
                 }else
-                    champMessage.setText("Erreur ! Durée minimale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ borne.getTransactionCourante().getMontant() + " $");
+                    champMessage.setText("Erreur ! Durée minimale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             } else
                 champMessage.setText("Erreur ! Aucune carte validée !");
         } else
@@ -291,7 +292,7 @@ public class GUITP2 {
         if (borne.getTransactionCourante() != null){
             if (borne.getTransactionCourante().getCarte() != null){
                 borne.setDureeParkingToMax();
-                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + borne.getTransactionCourante().getMontant() + " $");
+                champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             } else
                 champMessage.setText("Erreur ! Aucune carte validée !");
         } else
