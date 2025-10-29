@@ -3,7 +3,6 @@ import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -222,7 +221,7 @@ public class GUITP2 {
             if (borne.insererPiece(new Piece(25)))
                 champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
@@ -231,7 +230,7 @@ public class GUITP2 {
             if (borne.insererPiece(new Piece(100)))
                 champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
@@ -240,25 +239,19 @@ public class GUITP2 {
             if (borne.insererPiece(new Piece(200)))
                 champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             else
-                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
+                champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
         }
     }
 
     private void boutonValiderDateExp_actionPerformed(){
         if (borne.getTransactionCourante() != null){
-            String num = champNumeroCarte.getText().replace(" ", "");
-            if (num.matches("[0-9]{16}")){
-                if (Integer.parseInt(champDateExp.getText().substring(0,2)) <= 12){
-                    YearMonth expiration = YearMonth.parse(champDateExp.getText(), DateTimeFormatter.ofPattern("MM/yy"));
-                    if (borne.validerCarte(expiration)){
-                        borne.getTransactionCourante().setCarte(champNumeroCarte.getText(), expiration);
-                        champMessage.setText("Carte Acceptée !\n" + "Vous pouvez utiliser les boutons MAX, + et - \n pour choisir la durée du stationnement.");
-                    } else
-                        champMessage.setText("Erreur ! Cette carte est expirée !");
-                } else
-                    champMessage.setText("Erreur ! Mois de la carte invalide !");
+            String num = champNumeroCarte.getText();
+            String expiration = borne.validerCarte(num, champDateExp.getText());
+            if (!expiration.contains("Erreur")) {
+                borne.getTransactionCourante().setCarte(champNumeroCarte.getText(), YearMonth.parse(expiration, DateTimeFormatter.ofPattern("MM/yy")));
+                champMessage.setText("Carte Acceptée !\nVous pouvez utiliser les boutons MAX, + et - \n pour choisir la durée du stationnement.");
             } else
-                champMessage.setText("Erreur ! Le numéro de carte de crédit est invalide !" + "\nVeuillez vérifier qu'il contient bien 16 chiffres.");
+                champMessage.setText(expiration);
         }
     }
 
@@ -268,7 +261,7 @@ public class GUITP2 {
                 if (borne.ajouterQuinzeMinutes()){
                     champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
                 }else
-                    champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
+                    champMessage.setText("Erreur ! Durée maximale de parking atteinte !\n" + place + "\n" +  borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             } else
                 champMessage.setText("Erreur ! Aucune carte validée !");
         } else
@@ -281,7 +274,7 @@ public class GUITP2 {
                 if (borne.retirerQuinzeMinutes()){
                     champMessage.setText(place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n" + Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
                 }else
-                    champMessage.setText("Erreur ! Durée minimale de parking atteinte !\n" + place + "\n" +  + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
+                    champMessage.setText("Erreur ! Durée minimale de parking atteinte !\n" + place + "\n" + borne.getTransactionCourante().getDureeMinutes() + " Minutes\n"+ Borne.DF.format(borne.getTransactionCourante().getMontant()) + " $");
             } else
                 champMessage.setText("Erreur ! Aucune carte validée !");
         } else

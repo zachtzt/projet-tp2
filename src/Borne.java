@@ -3,7 +3,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 public class Borne {
     private Transaction transactionCourante;
@@ -13,7 +13,7 @@ public class Borne {
     public static final int MIN_DUREE_PARKING = 0;
     public static final int INTERVAL_MINUTES = 15;
 
-    public static final DecimalFormat DF = new DecimalFormat("#.##");
+    public static final DecimalFormat DF = new DecimalFormat("##.##");
 
     public Borne() {
         transactionCourante = null;
@@ -34,14 +34,9 @@ public class Borne {
                 (LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY && (LocalDateTime.now().getHour() > 13 && LocalDateTime.now().getHour() < 18)) ||
                 (LocalDateTime.now().getHour() > 8 && LocalDateTime.now().getHour() < 23))){
             return true;
-        } else if ((placeStationnement.matches("SQ[0-9]{3}")) && (
-                (LocalDate.now().getDayOfWeek().getValue() <= 5 && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 21)) ||
-                (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 18)))) {
-            return true;
-        } else {
-            return false;
-        }
-
+        } else return (placeStationnement.matches("SQ[0-9]{3}")) && (
+                        (LocalDate.now().getDayOfWeek().getValue() <= 5 && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 21)) ||
+                        (LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY && (LocalDateTime.now().getHour() > 9 && LocalDateTime.now().getHour() < 18)));
     }
 
     public boolean verifPlace(String placeStationnement){
@@ -63,7 +58,7 @@ public class Borne {
     }
 
     public boolean retirerQuinzeMinutes(){
-        if (getTransactionCourante().getDureeMinutes() >= MIN_DUREE_PARKING){
+        if (getTransactionCourante().getDureeMinutes() > MIN_DUREE_PARKING){
             getTransactionCourante().setDureeMinutes(getTransactionCourante().getDureeMinutes() - INTERVAL_MINUTES);
             getTransactionCourante().setMontantCredit(getTransactionCourante().getMontantCredit() - (getTransactionCourante().getTauxHoraireCent() / 4));
             return true;
@@ -71,8 +66,18 @@ public class Borne {
         return false;
     }
 
-    public boolean validerCarte(YearMonth expiration) {
-        return (YearMonth.now().isBefore(expiration));
+    public String validerCarte(String num, String expiration) {
+        num = num.replace(" ", "");
+        if (num.matches("[0-9]{16}")){
+            if ((Integer.parseInt(expiration.substring(0, 2)) <= 12)){
+                if (YearMonth.now().isBefore(YearMonth.parse(expiration, DateTimeFormatter.ofPattern("MM/yy")))){
+                    return expiration;
+                } else
+                    return "Erreur ! Cette carte est expirée !";
+            }else
+                return "Erreur ! Mois de la carte invalide !";
+        }else
+            return "Erreur ! Le numéro de carte de crédit est invalide !\nVeuillez vérifier qu'il contient bien 16 chiffres.";
     }
 
     public boolean insererPiece(Piece p){
